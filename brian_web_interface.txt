@@ -1,0 +1,111 @@
+
+from flask import Flask, render_template_string, request, jsonify
+import openai
+import yaml
+
+# Configuration OpenAI
+openai.api_key = "sk-XXXX"  # <<< Remplace par ta vraie clé API
+
+# Charger le profil de Max à partir du fichier YAML
+with open("/root/brian/memoire/profil.yaml", "r") as f:
+    profil = yaml.safe_load(f)
+
+# Initialiser l'app Flask
+app = Flask(__name__)
+
+# Template HTML stylisé MaxVerse
+html_template = '''
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Brian - MaxVerseOS</title>
+    <style>
+        body {
+            background-color: #0b0c10;
+            color: #66fcf1;
+            font-family: monospace;
+            padding: 20px;
+        }
+        .terminal {
+            background-color: #1f2833;
+            border-radius: 10px;
+            padding: 20px;
+            height: 70vh;
+            overflow-y: scroll;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #45a29e;
+            color: #0b0c10;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background-color: #66fcf1;
+            color: #0b0c10;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Brian – MaxVerseOS</h1>
+    <div class="terminal" id="terminal"></div>
+    <br>
+    <input type="text" id="user_input" placeholder="Parle à Brian...">
+    <button onclick="sendMessage()">Envoyer</button>
+
+    <script>
+        function sendMessage() {
+            let user_input = document.getElementById("user_input").value;
+            fetch("/ask", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({message: user_input})
+            })
+            .then(response => response.json())
+            .then(data => {
+                let terminal = document.getElementById("terminal");
+                terminal.innerHTML += `<div><b>Tu :</b> ${user_input}</div>`;
+                terminal.innerHTML += `<div><b>Brian :</b> ${data.reply}</div><br>`;
+                terminal.scrollTop = terminal.scrollHeight;
+                document.getElementById("user_input").value = "";
+            });
+        }
+    </script>
+</body>
+</html>
+'''
+
+@app.route("/")
+def index():
+    return render_template_string(html_template)
+
+@app.route("/ask", methods=["POST"])
+def ask():
+    user_message = request.json["message"]
+
+    # Commande spéciale !resume
+    if user_message.strip() == "!resume":
+        resume = f"Tu es Max, né le {profil.get('date_naissance', 'inconnu')}, vivant à {profil.get('adresse', 'inconnue')}..."
+        return jsonify({"reply": resume})
+
+    # Requête à OpenAI avec le contexte de Max
+    prompt = f"Tu es Brian, l'assistant IA personnel de Max. Voici son profil : {profil}. Max te dit : {user_message}"
+
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    reply = completion.choices[0].message.content
+    return jsonify({"reply": reply})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)

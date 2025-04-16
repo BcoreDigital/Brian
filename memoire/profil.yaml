@@ -1,0 +1,33 @@
+alias: Max
+nom: Maxime Dufour Lalancette
+alias: Max
+projet_principal: B CORE DIGITAL
+assistant: Brian
+systeme: MaxVerseOS
+modele: GPT-3.5-turbo
+objectif: Assistant IA personnel conversationnel avec mémoire
+localisation: Québec, Canada
+valeurs:
+  - Authenticité
+  - Créativité
+  - Liberté
+  - Résilience
+
+relations_importantes:
+  bjorn: "Relation affective importante, en cours de réconciliation"
+  jerome: "Vétérinaire épidémiologiste, complice, chaleureux, en exploration"
+  claudia: "Alliée clé de la reconstruction, pilier de soutien"
+
+projets_IA:
+  - nom: Brian
+    description: "Assistant personnel AI autonome avec apprentissage dynamique"
+  - nom: AutoVerseAI
+    description: "Assistant IA pour concessions automobiles"
+  - nom: MaxVerseOS
+    description: "Système d’exploitation personnel, modulaire et intelligent"
+  - nom: B CORE DIGITAL
+    description: "Structure officielle pour création d’IA personnalisées"
+  - nom: FluxQuantique
+    description: "IA dédiée aux vétérinaires, co-créée avec Jérôme"
+
+dernier_export: "2025-04-11T00:10:00"
